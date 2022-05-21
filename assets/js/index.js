@@ -27,3 +27,26 @@ function toggleSlide() {
 
 toggleSlide();
 
+//退出
+const logout = document.querySelector('.logout a')
+logout.addEventListener('click', () => {
+  localStorage.removeItem('token')
+  location.href = './login.html'
+})
+//初始化数据
+const init = document.querySelector('.init')
+init.addEventListener('click', () => {
+  axios({
+    method: 'get',
+    url: '/init/data',
+  }).then(({ data: res }) => {
+    //成功回调
+    if (res.code === 0) {
+      TransformStream.success(res.message)
+    }
+    if (res.code === 1) {
+      toastr.error(res.message)
+    }
+  })
+})
+

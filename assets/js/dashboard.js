@@ -1,6 +1,20 @@
+// 班级情况
+axios({
+  method: 'get',
+  url: '/student/overview',
+}).then(({ data: res }) => {
+  //成功回调
+  if (res.code === 0) {
+    // console.log(res);
+    document.querySelector('.total').innerHTML = res.data.total
+    document.querySelector('.avgAge').innerHTML = res.data.avgAge
+    document.querySelector('.avgSalary').innerHTML = res.data.avgSalary
+    document.querySelector('.proportion').innerHTML = res.data.proportion
+  }
+})
 pieData()
 //扇形图
-function pieData() {
+function pieData(data) {
   const mycharts = echarts.init(document.querySelector('.pie'))
   const option = {
     title: {
@@ -9,35 +23,28 @@ function pieData() {
         color: '#ccc'
       }
     },
+    tooltip: {
+      trigger: 'item',
+      formatter: '{a} <br/>{b}<b>{c}</b>人 占比{d}%'
+    },
     series: [
       {
-        name: 'Nightingale Chart',
+        name: '各地人员分别',
         type: 'pie',
-        radius: [50, 150],
+        radius: [20, 150],
         center: ['50%', '50%'],
-        roseType: 'area',
+        roseType: 'radius',
         itemStyle: {
           borderRadius: 8
         },
-        data: [
-          { value: 40, name: 'rose 1' },
-          { value: 38, name: 'rose 2' },
-          { value: 32, name: 'rose 3' },
-          { value: 30, name: 'rose 4' },
-          { value: 28, name: 'rose 5' },
-          { value: 26, name: 'rose 6' },
-          { value: 22, name: 'rose 7' },
-          { value: 18, name: 'rose 8' }
-        ]
+        data: data
       }
     ]
   };
   mycharts.setOption(option)
 }
-
 //折线图
-lineData()
-function lineData() {
+function lineData(salary, truesalary, user) {
   const mycharts = echarts.init(document.querySelector('.line'))
   const
     option = {
@@ -63,7 +70,7 @@ function lineData() {
       xAxis: {
         type: 'category',
         boundaryGap: false,
-        data: [1, 2, 3, 4]
+        data: user
       },
       yAxis: {
         type: 'value',
@@ -73,7 +80,7 @@ function lineData() {
         {
           type: 'inside',
           start: 0,
-          end: 10
+          end: 100
         },
         {
           start: 0,
@@ -87,7 +94,7 @@ function lineData() {
           symbol: 'none',
           sampling: 'lttb',
           smooth: true,
-          data: [1, 2, 3, 4]
+          data: salary
         },
         {
           name: '实际薪资',
@@ -95,17 +102,15 @@ function lineData() {
           symbol: 'none',
           smooth: true,
           sampling: 'lttb',
-          data: [4, 6, 1, 6]
+          data: truesalary
         }
       ]
     };
   mycharts.setOption(option)
 
 }
-
 //柱形图
-barData()
-function barData() {
+function barData(obj) {
   const mycharts = echarts.init(document.querySelector('.barChart'))
   const option = {
     tooltip: {
@@ -122,7 +127,7 @@ function barData() {
     xAxis: [
       {
         type: 'category',
-        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        data: obj.group,
         axisPointer: {
           type: 'shadow'
         }
@@ -154,77 +159,42 @@ function barData() {
         type: 'bar',
         barWidth: '15',
         yAxisIndex: 0,
-        data: [
-          2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3
-        ]
+        data: obj.avgScore
       },
       {
         name: '低于60的人',
         type: 'bar',
         barWidth: '15',
         yAxisIndex: 1,
-        data: [
-          2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3
-        ]
+        data: obj.lt60
       },
       {
         name: '60-80的人',
         type: 'bar',
         barWidth: '15',
         yAxisIndex: 1,
-        data: [
-          2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3
-        ]
+        data: obj.gt60
       },
       {
         name: '高于80的人',
         type: 'bar',
         barWidth: '15',
         yAxisIndex: 1,
-        data: [
-          2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3
-        ]
+        data: obj.gt80
       },
 
     ]
   };
   mycharts.setOption(option)
 }
-
 //地图
-mapData()
-function mapData() {
+
+function mapData(map1, map2) {
   const mycharts = echarts.init(document.querySelector('.map'))
 
   // 位置 + 经纬度
-  var chinaGeoCoordMap = {
-    "顺义校区": [
-      116.4551,
-      40.2539
-    ],
-    "海拉尔区": [
-      119.736279,
-      49.212189
-    ],
-    "市中区": [
-      116.997777,
-      36.651474
-    ],
-  };
-  var chinaDatas = [
-    [
-      {
-        "name": "海拉尔区",
-        "value": 0
-      }
-    ],
-    [
-      {
-        "name": "市中区",
-        "value": 0
-      }
-    ],
-  ];
+  var chinaGeoCoordMap = map1;
+  var chinaDatas = map2;
 
   var convertData = function (data) {
     var res = [];
@@ -410,5 +380,71 @@ btn.addEventListener('click', () => {
     batch.style.display = 'block'
   } else {
     batch.style.display = 'none'
+  }
+})
+
+//成绩
+const lis = document.querySelectorAll('#batch li')
+for (let i = 0; i < lis.length; i++) {
+
+  lis[i].addEventListener('click', () => {
+    axios({
+      method: 'get',
+      url: '/score/batch',
+      params: { batch: i + 1 }
+    }).then(({ data: res }) => {
+      //成功回调
+      // console.log(res.data);
+      barData(res.data)
+    })
+  })
+}
+lis[0].click()
+
+//其他三个
+axios({
+  method: 'get',
+  url: '/student/list',
+}).then(({ data: res }) => {
+  //成功回调
+  if (res.code === 0) {
+    // console.log(res);
+    let data = []
+    let user = []
+    let salary = []
+    let truesalary = []
+
+    let map1 = {
+      "顺义校区": [
+        116.4551,
+        40.2539
+      ]
+    }
+    let map2 = [
+    ]
+    res.data.forEach(item => {
+      let num = data.findIndex(ele => ele.name == item.province)
+      if (num == -1) {
+        data.push({ value: '1', name: item.province })
+      } else {
+        data[num].value++
+      }
+      salary.push(item.salary)
+      user.push(item.name)
+      truesalary.push(item.truesalary)
+      map1[item.county] = [item.jing, item.wei]
+      let a = map2.findIndex(ele => ele[0].name == item.county)
+      if (a == -1) {
+        map2.push([{ name: item.county, value: 1 }])
+
+      } else {
+        map2[a][0].value++
+      }
+
+    })
+    console.log(map1, map2);
+    pieData(data)
+    lineData(salary, truesalary, user)
+    mapData(map1, map2)
   }
 })

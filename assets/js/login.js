@@ -2,8 +2,6 @@ const register = document.querySelector('.register')
 const register_a = document.querySelector('.register a')
 const login = document.querySelector('.login')
 const login_a = document.querySelector('.login a')
-
-
 register_a.addEventListener('click', () => {
   register.style.display = 'none'
   login.style.display = 'block'
