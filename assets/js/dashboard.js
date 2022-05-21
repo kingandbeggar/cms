@@ -436,13 +436,10 @@ axios({
       let a = map2.findIndex(ele => ele[0].name == item.county)
       if (a == -1) {
         map2.push([{ name: item.county, value: 1 }])
-
       } else {
         map2[a][0].value++
       }
-
     })
-    console.log(map1, map2);
     pieData(data)
     lineData(salary, truesalary, user)
     mapData(map1, map2)

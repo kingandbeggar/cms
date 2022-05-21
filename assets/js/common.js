@@ -19,7 +19,7 @@ axios.interceptors.response.use(function (response) {
 }, function (error) {
   // 对响应错误做点什么  
   // console.dir(error);
-  if (error.response.data.code === 1) {
+  if (error.response.data.message == '身份认证失败') {
     toastr.error('抱歉，身份认证失败')
     if (location.href.indexOf('index.html') !== -1) {
       location.href = './login.html'
@@ -27,7 +27,7 @@ axios.interceptors.response.use(function (response) {
       window.parent.location.href = './login.html'
     }
   } else {
-    toastr.error(response.data.message)
+    toastr.error(error.response.data.message)
   }
   return Promise.reject(error);
 });
